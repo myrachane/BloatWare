@@ -163,6 +163,6 @@ Apache License 2.0 — do whatever you want with it. The proletariat owns this c
 *"The philosophers have only interpreted the world. The point, however, is to change it."*
 *— Karl Marx, probably while annoyed at someone on Discord*
 
-**Made with 😐 and communist disdain**
-
+**Made with Sovieth disdain**
+(I am not communist 🙂)
 </div>
