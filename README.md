@@ -100,14 +100,16 @@ BloatWare is now online. It is not pleased.
 
 ```
 BloatWare/
-├
-├── Main.py          # Discord client, events
-├── docker.yml   # Orchestrates bot + ollama containers
-└── README.md
-├── BloatMe
-     ├── Functions.py     # Ollama calls, message helpers, personality prompt
-     ├── Dockerfile       # Bot container
-     └── .env             # Your secrets (never commit this)
+├── BloatMe/
+│   ├── .env
+│   ├── Functions.py
+│   └── __init__.py
+├── Main.py
+├── README.md
+├── SECURITY.md
+├── docker.yml
+├── pyproject.toml
+└── requirements.txt
 
 ```
 
