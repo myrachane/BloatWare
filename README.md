@@ -9,6 +9,7 @@
 [![Discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2?style=for-the-badge&logo=discord)](https://discordpy.readthedocs.io)
 [![Ollama](https://img.shields.io/badge/Ollama-Llama_3.2-black?style=for-the-badge)](https://ollama.com)
 [![License](https://img.shields.io/badge/License-Apache_2.0-red?style=for-the-badge)](LICENSE)
+
 *Powered by local LLM. No API costs. No mercy. Pure Soviet energy.*
 
 </div>
