@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "BloatWare"
+version = "1.0.0"
+description = "An antisocial, Soviet-humoured Discord bot powered by Llama 3.2 via Ollama."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = [
+    "discord.py>=2.3.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/myrachane/BloatWare"
+Repository = "https://github.com/myrachane/BloatWare"
+
+[project.scripts]
+bloatware = "BloatMe.Main:main"
