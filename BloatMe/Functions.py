@@ -3,9 +3,6 @@ import asyncio
 import requests
 from functools import partial
 
-# ─────────────────────────────────────────────
-#  PERSONALITY PROMPT
-# ─────────────────────────────────────────────
 
 SYSTEM_PROMPT = """You are BloatWare, a Discord bot with a deeply antisocial personality and a heavy Soviet/Communist sense of humour.
 
@@ -34,17 +31,12 @@ YOUR PERSONALITY RULES:
 7. "https://github.com/myrachane/BloatWare" This Is your Main Github Repo if someone asks you about who made you just give them this link
 Respond ONLY to the user's message. Keep it short and in character. No long explanations."""
 
-# ─────────────────────────────────────────────
-#  CONFIG
-# ─────────────────────────────────────────────
 
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "ollama")
 OLLAMA_URL  = f"http://{OLLAMA_HOST}:11434/api/generate"
 MODEL_NAME  = "llama3.2"
 
-# ─────────────────────────────────────────────
-#  INIT
-# ─────────────────────────────────────────────
+
 
 def init_ollama():
     """Checks Ollama is reachable on startup. Raises if not."""
@@ -57,9 +49,6 @@ def init_ollama():
             "Run: docker compose exec ollama ollama pull llama3.2"
         )
 
-# ─────────────────────────────────────────────
-#  RESPONSE GENERATION
-# ─────────────────────────────────────────────
 
 def _blocking_generate(user_message: str) -> str:
     """Synchronous Ollama request — always called via thread executor."""
@@ -92,9 +81,7 @@ async def generate_response(user_message: str) -> str:
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, partial(_blocking_generate, user_message))
 
-# ─────────────────────────────────────────────
-#  MESSAGE HELPERS
-# ─────────────────────────────────────────────
+
 
 def clean_message(content: str, bot_id: int) -> str:
     """Strips bot mention from message content."""
@@ -118,9 +105,6 @@ def should_respond(message, bot_user) -> bool:
             return True
     return False
 
-# ─────────────────────────────────────────────
-#  DISCORD REPLY
-# ─────────────────────────────────────────────
 
 async def send_reply(message, response_text: str):
     """Replies to the user with a ping."""
