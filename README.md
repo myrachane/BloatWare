@@ -9,8 +9,7 @@
 [![Discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2?style=for-the-badge&logo=discord)](https://discordpy.readthedocs.io)
 [![Ollama](https://img.shields.io/badge/Ollama-Llama_3.2-black?style=for-the-badge)](https://ollama.com)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)](https://docker.com)
-[![License](https://img.shields.io/badge/License-MIT-red?style=for-the-badge)](LICENSE)
-
+[![License](https://img.shields.io/badge/License-Apache_2.0-red?style=for-the-badge)](LICENSE)
 *Powered by local LLM. No API costs. No mercy. Pure Soviet energy.*
 
 </div>
@@ -101,14 +100,15 @@ BloatWare is now online. It is not pleased.
 
 ```
 BloatWare/
-├── bot/
-│   ├── Main.py          # Discord client, events
-│   ├── Functions.py     # Ollama calls, message helpers, personality prompt
-│   ├── Dockerfile       # Bot container
-│   └── .env             # Your secrets (never commit this)
-├── docker-compose.yml   # Orchestrates bot + ollama containers
-├── .gitignore
+├
+├── Main.py          # Discord client, events
+├── docker.yml   # Orchestrates bot + ollama containers
 └── README.md
+├── BloatMe
+     ├── Functions.py     # Ollama calls, message helpers, personality prompt
+     ├── Dockerfile       # Bot container
+     └── .env             # Your secrets (never commit this)
+
 ```
 
 ---
