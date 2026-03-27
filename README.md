@@ -8,7 +8,6 @@
 [![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2?style=for-the-badge&logo=discord)](https://discordpy.readthedocs.io)
 [![Ollama](https://img.shields.io/badge/Ollama-Llama_3.2-black?style=for-the-badge)](https://ollama.com)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)](https://docker.com)
 [![License](https://img.shields.io/badge/License-Apache_2.0-red?style=for-the-badge)](LICENSE)
 *Powered by local LLM. No API costs. No mercy. Pure Soviet energy.*
 
