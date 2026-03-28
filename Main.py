@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import discord
 from dotenv import load_dotenv
-from BloatMe import Functions
+import BloatMe.Functions as Functions
 
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
