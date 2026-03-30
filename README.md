@@ -5,6 +5,8 @@
 # 🚩 BloatWare
 ### *A Discord bot that deeply resents your existence.*
 
+YetAnother SoviethGPT
+
 [![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2?style=for-the-badge&logo=discord)](https://discordpy.readthedocs.io)
 [![Ollama](https://img.shields.io/badge/Ollama-Llama_3.2-black?style=for-the-badge)](https://ollama.com)
