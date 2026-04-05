@@ -64,7 +64,7 @@ python-dotenv → manages secrets
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/yourusername/BloatWare.git
+git clone https://github.com/myrachane/BloatWare.git
 cd BloatWare
 ```
 
