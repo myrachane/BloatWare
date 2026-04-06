@@ -2,7 +2,13 @@ import os
 from pathlib import Path
 import discord
 from dotenv import load_dotenv
-import BloatMe.Functions as Functions
+from BloatMe.Functions import (
+    init_ollama,
+    should_respond,
+    clean_message,
+    generate_response,
+    send_reply
+)
 
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
