@@ -38,8 +38,8 @@ MODEL_NAME  = "llama3.2"
 
 
 
-def init_ollama():
-    """Checks Ollama is reachable on startup. Raises if not."""
+""" def init_ollama():
+    #Checks Ollama is reachable on startup. Raises if not.
     try:
         requests.get(f"http://{OLLAMA_HOST}:11434", timeout=5)
         print(f"[Ollama] Reachable at {OLLAMA_HOST}:11434. BloatWare is ready (and annoyed).")
@@ -47,11 +47,21 @@ def init_ollama():
         raise RuntimeError(
             f"Ollama not reachable at {OLLAMA_HOST}:11434!\n"
             "Run: docker compose exec ollama ollama pull llama3.2"
-        )
+        ) """ # NOT USING THIS FOR NOW
+
+
+def init_ollama():  # Imporved Version As Suggested
+    try:
+        r = requests.get(f"http://{OLLAMA_HOST}:{OLLAMA_PORT}", timeout=5)
+        r.raise_for_status()
+        print(f"[Ollama] Reachable at {OLLAMA_HOST}:{OLLAMA_PORT}.")
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Ollama connection failed: {e}")   
+
 
 
 def _blocking_generate(user_message: str) -> str:
-    """Synchronous Ollama request — always called via thread executor."""
+   #Synchronous Ollama request — always called via thread executor.
     payload = {
         "model": MODEL_NAME,
         "prompt": user_message,
@@ -62,20 +72,19 @@ def _blocking_generate(user_message: str) -> str:
             "num_predict": 120,
         }
     }
+   # UPDATED RETRY LOGIC
+    max_retries = 2
+for attempt in range(max_retries):
     try:
         r = requests.post(OLLAMA_URL, json=payload, timeout=60)
         r.raise_for_status()
         return r.json().get("response", "...").strip()
-    except Exception as e:
-        print(f"[Ollama Error] {e}")
-        return "The state is currently unavailable. Try again during the next Five-Year Plan. 😐"
+    except requests.Timeout:
+        if attempt == max_retries - 1:
+            return "The Politburo is slow today... 😐"
 
 
 async def generate_response(user_message: str) -> str:
-    """
-    Async wrapper around _blocking_generate.
-    Runs in a thread executor so Discord's heartbeat never gets blocked.
-    """
     if not user_message.strip():
         return "..."
     loop = asyncio.get_event_loop()
@@ -84,18 +93,14 @@ async def generate_response(user_message: str) -> str:
 
 
 def clean_message(content: str, bot_id: int) -> str:
-    """Strips bot mention from message content."""
+    
     for mention in [f"<@{bot_id}>", f"<@!{bot_id}>"]:
         content = content.replace(mention, "")
     return content.strip()
 
 
 def should_respond(message, bot_user) -> bool:
-    """
-    Returns True if BloatWare should respond.
-    - Never responds to bots.
-    - Responds to @mentions and replies to its own messages.
-    """
+   
     if message.author.bot:
         return False
     if bot_user in message.mentions:
@@ -107,5 +112,10 @@ def should_respond(message, bot_user) -> bool:
 
 
 async def send_reply(message, response_text: str):
-    """Replies to the user with a ping."""
-    await message.reply(response_text, mention_author=True)
+    # reply mfs
+   MAX_LENGTH = 2000
+   if len(response_text) > MAX_LENGTH:
+      for chunk in [response_text[i:i+MAX_LENGTH] for i in range(0, len(response_text), MAX_LENGTH)]:
+         await message.reply(response_text, mention_author=True)
+else:
+   await message.reply(response_text, mention_author=True)
