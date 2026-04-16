@@ -1,23 +1,24 @@
+version: "3.9"
+
 services:
+  bot:
+    build: .
+    container_name: bloatware-bot
+    depends_on:
+      - ollama
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - OLLAMA_HOST=ollama
+    restart: unless-stopped
+
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
-    restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-
-  bot:
-    build: ./bot
-    container_name: discord-bot
     restart: unless-stopped
-    depends_on:
-      - ollama
-    env_file:
-      - ./bot/.env
-    environment:
-      - OLLAMA_HOST=ollama
 
 volumes:
   ollama_data:
