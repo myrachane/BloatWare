@@ -73,15 +73,27 @@ def _blocking_generate(user_message: str) -> str:
         }
     }
    # UPDATED RETRY LOGIC
+   def _blocking_generate(user_message: str) -> str:
+    payload = {
+        "model": MODEL_NAME,
+        "prompt": user_message,
+        "system": SYSTEM_PROMPT,
+        "stream": False,
+        "options": {
+            "temperature": 1.0,
+            "num_predict": 120,
+        }
+    }
+
     max_retries = 2
-for attempt in range(max_retries):
-    try:
-        r = requests.post(OLLAMA_URL, json=payload, timeout=60)
-        r.raise_for_status()
-        return r.json().get("response", "...").strip()
-    except requests.Timeout:
-        if attempt == max_retries - 1:
-            return "The Politburo is slow today... 😐"
+    for attempt in range(max_retries):
+        try:
+            r = requests.post(OLLAMA_URL, json=payload, timeout=60)
+            r.raise_for_status()
+            return r.json().get("response", "...").strip()
+        except requests.Timeout:
+            if attempt == max_retries - 1:
+                return "The Politburo is slow today... 😐"
 
 
 async def generate_response(user_message: str) -> str:
