@@ -2,7 +2,9 @@ import os
 import asyncio
 import requests
 from functools import partial
-
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "ollama")
+OLLAMA_PORT = 11434
+OLLAMA_URL  = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/generate"
 
 SYSTEM_PROMPT = """You are BloatWare, a Discord bot with a deeply antisocial personality and a heavy Soviet/Communist sense of humour.
 
