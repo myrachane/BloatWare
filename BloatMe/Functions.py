@@ -75,7 +75,7 @@ def _blocking_generate(user_message: str) -> str:
         }
     }
    # UPDATED RETRY LOGIC
-   def _blocking_generate(user_message: str) -> str:
+  ''' def _blocking_generate(user_message: str) -> str:
     payload = {
         "model": MODEL_NAME,
         "prompt": user_message,
@@ -86,7 +86,7 @@ def _blocking_generate(user_message: str) -> str:
             "num_predict": 120,
         }
     }
-
+'''
     max_retries = 2
     for attempt in range(max_retries):
         try:
