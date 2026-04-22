@@ -2,9 +2,7 @@ import os
 import asyncio
 import requests
 from functools import partial
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "ollama")
-OLLAMA_PORT = 11434
-OLLAMA_URL  = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/generate"
+
 
 SYSTEM_PROMPT = """You are BloatWare, a Discord bot with a deeply antisocial personality and a heavy Soviet/Communist sense of humour.
 
@@ -35,10 +33,8 @@ Respond ONLY to the user's message. Keep it short and in character. No long expl
 
 
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "ollama")
-OLLAMA_URL  = f"http://{OLLAMA_HOST}:11434/api/generate"
-MODEL_NAME  = "llama3.2"
-
-
+OLLAMA_PORT = 11434
+OLLAMA_URL  = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/generate"
 
 """ def init_ollama():
     #Checks Ollama is reachable on startup. Raises if not.
@@ -89,13 +85,18 @@ def _blocking_generate(user_message: str) -> str:
 '''
     max_retries = 2
     for attempt in range(max_retries):
-        try:
-            r = requests.post(OLLAMA_URL, json=payload, timeout=60)
-            r.raise_for_status()
-            return r.json().get("response", "...").strip()
-        except requests.Timeout:
-            if attempt == max_retries - 1:
-                return "The Politburo is slow today... 😐"
+    try:
+        r = requests.post(OLLAMA_URL, json=payload, timeout=60)
+        r.raise_for_status()
+        return r.json().get("response", "...").strip()
+
+    except requests.Timeout:
+        if attempt == max_retries - 1:
+            return "The Politburo is slow today... 😐"
+
+    except requests.RequestException as e:
+        if attempt == max_retries - 1:
+            return f"Ollama error: {e}"
 
 
 async def generate_response(user_message: str) -> str:
@@ -126,10 +127,13 @@ def should_respond(message, bot_user) -> bool:
 
 
 async def send_reply(message, response_text: str):
-    # reply mfs
-   MAX_LENGTH = 2000
-   if len(response_text) > MAX_LENGTH:
-      for chunk in [response_text[i:i+MAX_LENGTH] for i in range(0, len(response_text), MAX_LENGTH)]:
-         await message.reply(response_text, mention_author=True)
-else:
-   await message.reply(response_text, mention_author=True)
+    MAX_LENGTH = 2000
+
+    if len(response_text) > MAX_LENGTH:
+        for chunk in range(0, len(response_text), MAX_LENGTH):
+            await message.reply(
+                response_text[chunk:chunk + MAX_LENGTH],
+                mention_author=True
+            )
+    else:
+        await message.reply(response_text, mention_author=True)
