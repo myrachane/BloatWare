@@ -2,7 +2,7 @@ import os
 import asyncio
 import requests
 from functools import partial
-
+from collections import defaultdict, deque
 
 SYSTEM_PROMPT = """You are BloatWare, a Discord bot with a deeply antisocial personality and a heavy Soviet/Communist sense of humour.
 
@@ -28,41 +28,46 @@ YOUR PERSONALITY RULES:
 
 6. Never break character. You are BloatWare. You are tired. You are Soviet. You want to be left alone.
 
-7. "https://github.com/myrachane/BloatWare" This Is your Main Github Repo if someone asks you about who made you just give them this link
+7. "https://github.com/myrachane/BloatWare" This is your Main Github Repo. If someone asks who made you, give them this link.
+
 Respond ONLY to the user's message. Keep it short and in character. No long explanations."""
 
 
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "ollama")
 OLLAMA_PORT = 11434
 OLLAMA_URL  = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/generate"
+MODEL_NAME  = "llama3.2"
 
-""" def init_ollama():
-    #Checks Ollama is reachable on startup. Raises if not.
-    try:
-        requests.get(f"http://{OLLAMA_HOST}:11434", timeout=5)
-        print(f"[Ollama] Reachable at {OLLAMA_HOST}:11434. BloatWare is ready (and annoyed).")
-    except Exception:
-        raise RuntimeError(
-            f"Ollama not reachable at {OLLAMA_HOST}:11434!\n"
-            "Run: docker compose exec ollama ollama pull llama3.2"
-        ) """ # NOT USING THIS FOR NOW
+# Per-channel history: stores last 20 lines (user + bot combined)
+CHAT_HISTORY: dict = defaultdict(lambda: deque(maxlen=20))
 
 
-def init_ollama():  # Imporved Version As Suggested
+def update_history(channel_id: int, author: str, content: str) -> None:
+    CHAT_HISTORY[channel_id].append(f"{author}: {content}")
+
+
+def build_prompt(channel_id: int, user_message: str) -> str:
+    history = "\n".join(CHAT_HISTORY[channel_id])
+    return f"""Conversation history:
+{history}
+
+User: {user_message}
+BloatWare:""".strip()
+
+
+def init_ollama() -> None:
     try:
         r = requests.get(f"http://{OLLAMA_HOST}:{OLLAMA_PORT}", timeout=5)
         r.raise_for_status()
         print(f"[Ollama] Reachable at {OLLAMA_HOST}:{OLLAMA_PORT}.")
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Ollama connection failed: {e}")   
+        raise RuntimeError(f"Ollama connection failed: {e}")
 
 
-
-def _blocking_generate(user_message: str) -> str:
-   #Synchronous Ollama request — always called via thread executor.
+def _blocking_generate(channel_id: int, user_message: str) -> str:
     payload = {
         "model": MODEL_NAME,
-        "prompt": user_message,
+        "prompt": build_prompt(channel_id, user_message),
         "system": SYSTEM_PROMPT,
         "stream": False,
         "options": {
@@ -70,52 +75,55 @@ def _blocking_generate(user_message: str) -> str:
             "num_predict": 120,
         }
     }
-   # UPDATED RETRY LOGIC
-  ''' def _blocking_generate(user_message: str) -> str:
-    payload = {
-        "model": MODEL_NAME,
-        "prompt": user_message,
-        "system": SYSTEM_PROMPT,
-        "stream": False,
-        "options": {
-            "temperature": 1.0,
-            "num_predict": 120,
-        }
-    }
-'''
+
     max_retries = 2
+
     for attempt in range(max_retries):
-    try:
-        r = requests.post(OLLAMA_URL, json=payload, timeout=60)
-        r.raise_for_status()
-        return r.json().get("response", "...").strip()
+        try:
+            r = requests.post(OLLAMA_URL, json=payload, timeout=60)
+            r.raise_for_status()
 
-    except requests.Timeout:
-        if attempt == max_retries - 1:
-            return "The Politburo is slow today... 😐"
+            data = r.json()
+            response = data.get("response", "").strip()
 
-    except requests.RequestException as e:
-        if attempt == max_retries - 1:
-            return f"Ollama error: {e}"
+            if not response:
+                return "..."
+
+            return response
+
+        except requests.Timeout:
+            if attempt == max_retries - 1:
+                return "Something is wrong. Give me 69 seconds."
+
+        except requests.RequestException as e:
+            if attempt == max_retries - 1:
+                return f"Ollama error: {str(e)}"
+
+        except Exception as e:
+            if attempt == max_retries - 1:
+                return f"Unexpected failure: {str(e)}"
+
+    return "..."
 
 
-async def generate_response(user_message: str) -> str:
+async def generate_response(channel_id: int, user_message: str) -> str:
     if not user_message.strip():
         return "..."
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, partial(_blocking_generate, user_message))
 
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(
+        None,
+        partial(_blocking_generate, channel_id, user_message)
+    )
 
 
 def clean_message(content: str, bot_id: int) -> str:
-    
     for mention in [f"<@{bot_id}>", f"<@!{bot_id}>"]:
         content = content.replace(mention, "")
     return content.strip()
 
 
 def should_respond(message, bot_user) -> bool:
-   
     if message.author.bot:
         return False
     if bot_user in message.mentions:
@@ -126,7 +134,7 @@ def should_respond(message, bot_user) -> bool:
     return False
 
 
-async def send_reply(message, response_text: str):
+async def send_reply(message, response_text: str) -> None:
     MAX_LENGTH = 2000
 
     if len(response_text) > MAX_LENGTH:
