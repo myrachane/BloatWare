@@ -1,13 +1,16 @@
 import os
 from pathlib import Path
+
 import discord
 from dotenv import load_dotenv
+
 from BloatMe.Functions import (
     init_ollama,
     should_respond,
     clean_message,
     generate_response,
-    send_reply
+    send_reply,
+    update_history,
 )
 
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
@@ -21,6 +24,7 @@ init_ollama()
 intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
+
 client = discord.Client(intents=intents)
 
 
@@ -43,9 +47,18 @@ async def on_message(message: discord.Message):
 
     async with message.channel.typing():
         user_text = clean_message(message.content, client.user.id)
+
         if not user_text:
             user_text = "[User tagged or replied without saying anything. Be dismissive.]"
-        response = await generate_response(user_text)
+
+        # Log user message into this channel's history
+        update_history(message.channel.id, message.author.display_name, user_text)
+
+        # Generate response (history is now included in the prompt)
+        response = await generate_response(message.channel.id, user_text)
+
+        # Log bot response into the same channel's history
+        update_history(message.channel.id, "BloatWare", response)
 
     await send_reply(message, response)
 
