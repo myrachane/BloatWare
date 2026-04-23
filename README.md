@@ -70,8 +70,8 @@ cd BloatWare
 
 ### 2. Set up your `.env`
 ```bash
-cp bot/.env.example bot/.env
-nano bot/.env
+cp .env.example .env
+nano .env
 ```
 Fill in:
 ```env
@@ -80,10 +80,10 @@ DISCORD_TOKEN=your_discord_bot_token_here
 
 ### 3. Start the containers
 ```bash
-docker compose up -d
+docker compose up --build
 ```
 
-### 4. Pull the model (first time only, ~2GB)
+### 4. Pull the model 
 ```bash
 docker compose exec ollama ollama pull llama3.2
 ```
@@ -103,13 +103,12 @@ BloatWare is now online. It is not pleased.
 ```
 BloatWare/
 ├── BloatMe/
-│   ├── .env
 │   ├── Functions.py
 │   └── __init__.py
 ├── Main.py
 ├── README.md
 ├── SECURITY.md
-├── docker.yml
+├── docker-compose.yml
 ├── pyproject.toml
 └── requirements.txt
 
