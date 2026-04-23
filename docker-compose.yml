@@ -9,6 +9,8 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     restart: unless-stopped
+    entrypoint: >
+      sh -c "ollama serve & sleep 3 && ollama pull llama3.2 && wait"
 
   bot:
     build: .
