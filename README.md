@@ -3,7 +3,7 @@
 <img src="https://media.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif" width="200"/>
 
 # 🚩 BloatWare
-### *A Discord bot that deeply resents your existence.*
+### *A Discord bot that deeply resents your existence yoknow.*
 
 YetAnother SoviethGPT
 MAJOR CHANGES TO BE MADE SOON
